@@ -11,8 +11,26 @@ struct s
 	int* arr;// массив под 3 стека
 };
 
-
-
+			//?
+// проверка заполненности стека
+// 0 - пуст 
+// 1 - имеет только 1 элемент
+// 2 - заполнен на 1/4 или меньше
+// 3 - полон
+// 4 - другое
+int how_full(struct s* stack, int stack_number)
+{
+	if (stack->last[stack_number] == NULL)
+		return 0;
+	if (stack->last[stack_number] == stack->first[stack_number])
+		return 1;
+	if (stack->last[stack_number] <= stack->count[stack_number]/4)
+		return 2;
+	if (stack->last[stack_number] == stack->count[stack_number])
+		return 3;
+	return 4;
+}
+			//?
 
 // создание стека
 int* create()
@@ -36,4 +54,6 @@ int* create()
 	stack->count[2] = 2;
 	return stack;
 }
+
+
 
