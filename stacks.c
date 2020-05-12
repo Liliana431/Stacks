@@ -1,6 +1,6 @@
 
+
 #include <stdio.h>
-#include <locale.h>
 #include <stdlib.h>
 //3 стека
 struct s
@@ -12,26 +12,34 @@ struct s
 	int count_arr;
 };
 
-			//?
+
 // проверка заполненности стека
 // 0 - пуст 
-// 1 - имеет только 1 элемент
-// 2 - заполнен на 1/4 или меньше
-// 3 - полон
-// 4 - другое
+// 1 - заполнен на 1/4 или меньше
+// 2 - полон
+// 3 - другое
 int how_full(struct s* stack, int stack_number)
 {
-	if (stack->last[stack_number] == NULL)
+	//стек пуст
+	if (stack->last[stack_number] == -1)
 		return 0;
-	if (stack->last[stack_number] == stack->first[stack_number])
+	//первый стек заполнен на 1/4 или меньше
+	if (stack_number == 0 && stack->last[0] <= stack->count[0]/4)
 		return 1;
-	if (stack->last[stack_number] <= stack->count[stack_number]/4)
+	//средний стек заполнен на 1/4 или меньше
+	if (stack_number == 1 && stack->last[1] - stack->count[0] + 1 <= stack->count[1] / 4)
+		return 1;
+	//последний стек заполнен на 1/4 или меньше
+	if (stack_number == 2 && stack->count_arr - stack->last[2] - 1 >= stack->count[2] * 3 / 4)
+		return 1;
+	//последний стек заполнен
+	if (stack_number == 2 && stack->last[2] + 1 == stack->count_arr)
 		return 2;
-	if (stack->last[stack_number] == stack->count[stack_number])
-		return 3;
-	return 4;
+	//первый или средний стек заполнен
+	if (stack_number < 2 && stack->last[stack_number] + 1 == stack->first[stack_number + 1])
+		return 2;
+	return 3;
 }
-			//?
 
 // создание стека
 struct s* create()
@@ -44,12 +52,12 @@ struct s* create()
 		stack->arr[i] = NULL;
 	// записывание номера первого и последнего элемента каждого стека
 	stack->first[0] = 0;
-	stack->last[0] = NULL;
+	stack->last[0] = -1;
 	stack->first[1] = 2;
-	stack->last[1] = NULL;
+	stack->last[1] = -1;
 	stack->first[2] = 4;
-	stack->last[2] = NULL;
-	//записыввание количества яйчеек каждого стека
+	stack->last[2] = -1;
+	//записыввание количества ячеек каждого стека
 	stack->count[0] = 2;
 	stack->count[1] = 2;
 	stack->count[2] = 2;
@@ -58,8 +66,8 @@ struct s* create()
 	return stack;
 }
 
-// добавление яйчеек в стек
-struct s* add_place(struct s* stack, int stack_number)
+// добавление ячеек в стек
+void add_place(struct s* stack, int stack_number)
 {
 	// добавление памти в конец массива
 	stack->arr = realloc(stack->arr, (stack->count_arr + stack->count[stack_number]) * sizeof(int));
@@ -73,7 +81,7 @@ struct s* add_place(struct s* stack, int stack_number)
 		stack->count_arr += stack->count[2];
 		//изменение размера стека
 		stack->count[2] *= 2;
-		return stack;
+		return;
 	}
 	//для остальных случаев
 	// перемещение значений всех стеков, находящихся после увеличиваемого, в конец
@@ -102,11 +110,11 @@ struct s* add_place(struct s* stack, int stack_number)
 	stack->count_arr += stack->count[stack_number];
 	//изменение размера стека
 	stack->count[stack_number] *= 2;
-	return stack;
+	return;
 }
 
-// удаление лишних яйчеек из стека
-struct s* clear_place(struct s* stack, int stack_number)
+// удаление лишних ячеек из стека
+void clear_place(struct s* stack, int stack_number)
 {
 	// для последнего стека
 	if (stack_number == 2)
@@ -117,7 +125,7 @@ struct s* clear_place(struct s* stack, int stack_number)
 		stack->count[2] /= 2;
 		//изменение размера массива
 		stack->count_arr = stack->count[0] + stack->count[1] + stack->count[2];
-		return stack;
+		return;
 	}
 	//для остальных случаев
 	// перемещение значений всех стеков, находящихся после уменьшаемого, на их будущее место
@@ -129,6 +137,65 @@ struct s* clear_place(struct s* stack, int stack_number)
 	stack->count_arr -= stack->count[stack_number];
 	//убрать лишние ячейки из конца массива
 	stack->arr = realloc(stack->arr, (stack->count_arr) * sizeof(int));
-	return stack;
+	// для среднего стека 
+	// изменение начала и концаа последнего стека
+	if (stack_number == 1)
+	{
+		stack->first[2] -= stack->count[stack_number];
+		stack->last[2] -= stack->count[stack_number];
+	}
+	// для первого стека
+	// изменение начала и концаа последнего и среднего стека
+	else
+	{
+		stack->first[2] -= stack->count[stack_number];
+		stack->first[1] -= stack->count[stack_number];
+		stack->last[1] -= stack->count[stack_number];
+		stack->last[2] -= stack->count[stack_number];
+	}
+	return;
+}
+
+// значение последнего элемента стека
+int top(struct s* stack, int stack_number)
+{
+	return stack->arr[stack->last[stack_number]];
+}
+
+// достать элемент из стека
+int pop(struct s* stack, int stack_number)
+{
+	//значение последнего элемента
+	int value;
+	value = stack->arr[stack->last[stack_number]];
+	//вместо него записывается NULL
+	stack->arr[stack->last[stack_number]] = NULL;
+	//изменяется номер последнего элемента
+	if (stack->last[stack_number] == stack->first[stack_number])
+		stack->last[stack_number] = -1;
+	else
+		stack->last[stack_number] --;
+	// если стек заполнен меньше, чем на 1/4
+	if (how_full(stack, stack_number) == 1)
+		// удаление лишних ячеек из стека
+		clear_place(stack, stack_number);
+	return value;
+}
+
+// положить элемент в стек
+void push(struct s* stack, int stack_number, int value)
+{
+	// если стек полон
+	if (how_full(stack, stack_number) == 2)
+		//добавить место
+		add_place(stack, stack_number);
+	// изменение номера последнего элемента стека
+	if (stack_number > 0 && stack->last[stack_number] == -1)
+		stack->last[stack_number] = stack->first[stack_number];
+	else
+		stack->last[stack_number] ++;
+	// записывание туда значения
+	stack->arr[stack->last[stack_number]] = value;
+	return;
 }
 
