@@ -21,7 +21,7 @@ struct s
 int how_full(struct s* stack, int stack_number)
 {
 	//стек пуст
-	if (stack->last[stack_number] == -1)
+	if (stack->last[stack_number] <= -1)
 		return 0;
 	//первый стек заполнен на 1/4 или меньше
 	if (stack_number == 0 && stack->last[0] <= stack->count[0]/4)

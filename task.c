@@ -10,9 +10,9 @@ int max(struct s* stack)
 	if (how_full(stack, 0) != 0)
 		m1 = top(stack, 0);
 	if (how_full(stack, 1) != 0)
-		m1 = top(stack, 1);
+		m2 = top(stack, 1);
 	if (how_full(stack, 2) != 0)
-		m1 = top(stack, 2);
+		m3 = top(stack, 2);
 	//сравнение значений
 	if (m1 >= m2)
 		if (m1 >= m3)

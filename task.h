@@ -23,6 +23,6 @@ int delete_simbol(int simbol, struct s* stack);
 void add_simbol(int simbol, int count, struct s* stack);
 
 // посимвольное чтение и проверка расстановки скобок
-int read_symbols(struct s* stack)
+int read_symbols(struct s* stack);
 
 #endif
