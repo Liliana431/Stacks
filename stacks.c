@@ -91,20 +91,25 @@ void add_place(struct s* stack, int stack_number)
 	for (int i = stack->last[stack_number] + 1; i < stack->first[stack_number + 1] + stack->count[stack_number]; i++)
 		stack->arr[i] = NULL;
 	// для среднего стека 
-	// изменение начала и концаа последнего стека
+	// изменение начала и конца последнего стека
 	if (stack_number == 1)
 	{
 		stack->first[2] += stack->count[stack_number];
-		stack->last[2] += stack->count[stack_number];
+		//если последний элемент существует
+		if (stack->last[2] != -1)
+			//меняется его номер
+			stack->last[2] += stack->count[stack_number];
 	}
 	// для первого стека
-	// изменение начала и концаа последнего и среднего стека
+	// изменение начала и конца (когда существует последний элемент) последнего и среднего стека
 	else
 	{
 		stack->first[2] += stack->count[stack_number];
 		stack->first[1] += stack->count[stack_number];
-		stack->last[1] += stack->count[stack_number];
-		stack->last[2] += stack->count[stack_number];
+		if (stack->last[1] != -1)
+			stack->last[1] += stack->count[stack_number];
+		if (stack->last[2] != -1)
+			stack->last[2] += stack->count[stack_number];
 	}
 	//изменение размера массива
 	stack->count_arr += stack->count[stack_number];
@@ -142,16 +147,21 @@ void clear_place(struct s* stack, int stack_number)
 	if (stack_number == 1)
 	{
 		stack->first[2] -= stack->count[stack_number];
-		stack->last[2] -= stack->count[stack_number];
+		//если последний элемент существует
+		if (stack->last[2] != -1)
+			//меняется его номер
+			stack->last[2] -= stack->count[stack_number];
 	}
 	// для первого стека
-	// изменение начала и концаа последнего и среднего стека
+	// изменение начала и конца (когда существует последний элемент) последнего и среднего стека
 	else
 	{
 		stack->first[2] -= stack->count[stack_number];
 		stack->first[1] -= stack->count[stack_number];
-		stack->last[1] -= stack->count[stack_number];
-		stack->last[2] -= stack->count[stack_number];
+		if (stack->last[1] != -1)
+			stack->last[1] -= stack->count[stack_number];
+		if (stack->last[2] != -1)
+			stack->last[2] -= stack->count[stack_number];
 	}
 	return;
 }
