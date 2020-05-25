@@ -8,11 +8,11 @@
 */
 
 #include <stdio.h>
-#include "task.h"
+#include "parenthesis_check.h"
 
 void main()
 {
-	struct s* stack;
+	struct stack* stack;
 	//создание стека
 	stack = create();
 	int otv;
@@ -33,9 +33,3 @@ void main()
 // 
 // (({[]{}})
 // [({)}]
-
-/*
-в stack->last записывается номер последнего записанного элемента или -1 если этот стек пуст 
-в функкциях add_place и clear_plase случай с -1 не рассматривался, поэтому -1 заменялось на другое число, а значит сбивался номер последнего эллемента
-теперь в случае, если stack->last == -1, его значение не меняется
-*/
